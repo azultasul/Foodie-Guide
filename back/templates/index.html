@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask ChatGPT 챗봇</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #chatbox { width: 400px; margin: auto; border: 1px solid #ddd; padding: 10px; height: 400px; overflow-y: auto; }
+        .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
+        .user { background-color: #d1e7fd; text-align: right; }
+        .bot { background-color: #f1f1f1; text-align: left; }
+        input { width: 80%; padding: 8px; }
+        button { padding: 8px 10px; }
+    </style>
+</head>
+<body>
+
+    <h2>Flask + ChatGPT 챗봇</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="메시지를 입력하세요...">
+    <button onclick="sendMessage()">보내기</button>
+
+    <script>
+        function sendMessage() {
+            let userMessage = $("#userInput").val();
+            if (!userMessage) return;
+
+            $("#chatbox").append(`<div class='message user'>${userMessage}</div>`);
+            $("#userInput").val('');
+
+            $.ajax({
+                type: "POST",
+                url: "/chat",
+                contentType: "application/json",
+                data: JSON.stringify({ message: userMessage }),
+                success: function(response) {
+                    $("#chatbox").append(`<div class='message bot'>${response.reply}</div>`);
+                    $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
+                }
+            });
+        }
+
+        $("#userInput").keypress(function(e) {
+            if (e.which == 13) sendMessage();
+        });
+    </script>
+
+</body>
+</html>
