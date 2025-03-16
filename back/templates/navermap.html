@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naver Maps API</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #chatbox { width: 100%; margin: auto; border: 1px solid #ddd; padding: 10px; height: 400px; overflow-y: auto; }
+        .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
+        .user { background-color: #d1e7fd; text-align: right; }
+        .bot { background-color: #f1f1f1; text-align: left; }
+        input { width: 80%; padding: 8px; }
+        button { padding: 8px 10px; }
+    </style>
+
+	<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId={{NCP_CLIENT_ID}}"></script>
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Naver 지도 API</h1>
+    <h3> 검색어: 강남역 카페</h3>
+    <h3> 상위 5개 출력</h3>
+        
+    <!-- <button onclick="getLocation()">위치 가져오기</button> -->
+    <!-- <p id="location">위치를 가져오려면 버튼을 클릭하세요.</p> -->
+
+    <div id="map"></div>
+    <script>
+        // 1. 기본 지도 생성
+        var mapOptions = {
+            center: new naver.maps.LatLng(37.49794, 127.02761), // 강남역 좌표
+            zoom: 15
+        };
+        var map = new naver.maps.Map('map', mapOptions);
+        let arr = [];
+        {% for item in items %}
+            // 2. 마커 추가
+            (function() {
+                var marker = new naver.maps.Marker({
+                    // position: new naver.maps.LatLng(37.49794, 127.02761),
+                    position: new naver.maps.LatLng({{item['lat']}}, {{item['lng']}}),
+                    map: map
+                });
+
+                // 3. 정보창 추가
+                var infoWindow = new naver.maps.InfoWindow({
+                    // content: '<div style="padding:10px;">강남역 스타벅스</div>'
+                    content: '<a href="{{item['link']}}"><div style="padding:10px;">{{item['title']}}</div></a>'
+                });
+
+                // 4. 마커 클릭 시 정보창 열기
+                naver.maps.Event.addListener(marker, "click", function () {
+                    if (infoWindow.getMap()) {
+                        infoWindow.close();
+                    } else {
+                        infoWindow.open(map, marker);
+                    }
+                });
+            })();
+        {% endfor %}
+        // 5. 사용자의 현재 위치 가져오기
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+
+                    var userLocation = new naver.maps.LatLng(userLat, userLng);
+                    map.setCenter(userLocation);
+
+                    // 사용자 위치에 마커 추가
+                    var userMarker = new naver.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        icon: {
+                            content: '<div style="color: red; font-weight: bold;">📍 내 위치</div>',
+                            anchor: new naver.maps.Point(12, 12)
+                        }
+                    });
+
+                    // 정보창 추가
+                    var userInfoWindow = new naver.maps.InfoWindow({
+                        content: '<div style="padding:10px;">여기가 내 위치!</div>'
+                    });
+
+                    naver.maps.Event.addListener(userMarker, "click", function () {
+                        userInfoWindow.open(map, userMarker);
+                    });
+
+                }, function (error) {
+                    alert("위치 정보를 가져올 수 없습니다.");
+                });
+            } else {
+                alert("이 브라우저에서는 Geolocation이 지원되지 않습니다.");
+            }
+        }
+
+        // 현재 위치 버튼 추가
+        var locationButton = document.createElement("button");
+        locationButton.innerText = "내 위치 찾기";
+        locationButton.style.position = "absolute";
+        locationButton.style.top = "10px";
+        locationButton.style.left = "10px";
+        locationButton.style.zIndex = "1000";
+        locationButton.onclick = getUserLocation;
+
+        document.body.appendChild(locationButton);
+
+    </script>
+    
+</body>
+</html>

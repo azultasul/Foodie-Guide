@@ -24,8 +24,11 @@ NCP_CLIENT_ID = os.getenv("NCP_CLIENT_ID")
 NCP_CLIENT_SECRET = os.getenv("NCP_CLIENT_SECRET")
 
 @app.route("/")
-def home():
+def sitemap():
+    return render_template('sitemap.html')
 
+@app.route("/home")
+def home():
     # 검색어 및 요청 URL 설정
     query = "강남역 카페"  # 검색어 (예: "카페", "맛집", "미용실" 등)
     display = 5  # 출력할 검색 결과 개수 (최대 5)
@@ -43,8 +46,6 @@ def home():
     # API 요청 (GET)
     response = requests.get(url, headers=headers)
 
-    
-    
     # 응답 확인
     if response.status_code == 200:
         items = []
@@ -63,6 +64,49 @@ def home():
         print("Error Code:", response.status_code)
         print("Error Message:", response.content)
         return render_template("index.html")
+
+@app.route("/navermap")
+def navermap():
+    # 검색어 및 요청 URL 설정
+    query = "강남역 카페"  # 검색어 (예: "카페", "맛집", "미용실" 등)
+    display = 5  # 출력할 검색 결과 개수 (최대 5)
+    start = 1  # 검색 시작 위치 (1부터 시작)
+    sort = "random"  # 정렬 방식 (sim: 유사도순, random: 랜덤)
+
+    url = f"https://openapi.naver.com/v1/search/local.json?query={query}&display={display}&start={start}&sort={sort}&mapx=100"
+
+    # HTTP 요청 헤더 설정
+    headers = {
+        "X-Naver-Client-Id": NAVER_CLIENT_ID,
+        "X-Naver-Client-Secret": NAVER_CLIENT_SECRET
+    }
+
+    # API 요청 (GET)
+    response = requests.get(url, headers=headers)
+
+    # 응답 확인
+    if response.status_code == 200:
+        items = []
+        data = response.json()
+        for item in data["items"]:
+            one = {}
+            one["title"] = item["title"]
+            one["lat"] = float(item["mapy"])/1e7
+            one["lng"] = float(item["mapx"])/1e7
+            one["link"] = item["link"]
+            items.append(one)
+            print(item)
+            # print(f"이름: {item["title"]}, 위치: {float(item["mapx"])/1e7}, {float(item["mapy"])/1e7}")
+            # print(f"이름: {item['title']}\n주소: {item['address']}\n전화번호: {item['telephone']}\n링크: {item['link']}\n")
+        return render_template("navermap.html", NCP_CLIENT_ID=NCP_CLIENT_ID, items=items)
+    else:
+        print("Error Code:", response.status_code)
+        print("Error Message:", response.content)
+        return render_template("navermap.html")
+
+@app.route("/aiagent")
+def aiagent():
+    return render_template('aiagent.html')
 
 @app.route("/chat", methods=["POST"])
 def chat():
