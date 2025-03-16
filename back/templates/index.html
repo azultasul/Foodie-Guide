@@ -53,7 +53,7 @@
                 // 3. 정보창 추가
                 var infoWindow = new naver.maps.InfoWindow({
                     // content: '<div style="padding:10px;">강남역 스타벅스</div>'
-                    content: '<div style="padding:10px;">{{item['title']}}</div>'
+                    content: '<a href="{{item['link']}}"><div style="padding:10px;">{{item['title']}}</div></a>'
                 });
 
                 // 4. 마커 클릭 시 정보창 열기

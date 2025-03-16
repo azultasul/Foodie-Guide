@@ -54,6 +54,7 @@ def home():
             one["title"] = item["title"]
             one["lat"] = float(item["mapy"])/1e7
             one["lng"] = float(item["mapx"])/1e7
+            one["link"] = item["link"]
             items.append(one)
             # print(f"이름: {item["title"]}, 위치: {float(item["mapx"])/1e7}, {float(item["mapy"])/1e7}")
             # print(f"이름: {item['title']}\n주소: {item['address']}\n전화번호: {item['telephone']}\n링크: {item['link']}\n")
