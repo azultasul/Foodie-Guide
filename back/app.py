@@ -104,6 +104,46 @@ def navermap():
         print("Error Message:", response.content)
         return render_template("navermap.html")
 
+@app.route("/navergeocode")
+def navergeocode():
+    latitude = 37.5665   # 위도 (서울)
+    longitude = 126.978  # 경도 (서울)
+    address = reverse_geocode(latitude, longitude)
+    
+    items = {}
+    items['latitude'] = latitude
+    items['longitude'] = longitude
+    items['longitude'] = longitude
+    items['address'] = address
+
+    return items
+
+
+def reverse_geocode(lat, lon):
+    url = "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc"
+    
+    params = {
+        "coords": f"{lon},{lat}",
+        "output": "json",
+        "orders": "addr,roadaddr"  # addr(지번 주소), roadaddr(도로명 주소)
+    }
+    
+    headers = {
+        "X-NCP-APIGW-API-KEY-ID": NCP_CLIENT_ID,
+        "X-NCP-APIGW-API-KEY": NCP_CLIENT_SECRET
+    }
+
+    response = requests.get(url, params=params, headers=headers)
+    result = response.json()
+    
+    if "results" in result and len(result["results"]) > 0:
+        address = result["results"][0]["region"]
+        return [address['area'+str(i)]['name'] for i in range(1,5)]
+        # return f"{address['area1']['name']},{address['area2']['name']} {address['area3']['name']} {address['area4']['name']}"
+    else:
+        return "주소를 찾을 수 없습니다."
+
+
 @app.route("/aiagent")
 def aiagent():
     return render_template('aiagent.html')
