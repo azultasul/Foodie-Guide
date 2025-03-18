@@ -143,10 +143,71 @@ def reverse_geocode(lat, lon):
     else:
         return "주소를 찾을 수 없습니다."
 
+CHAT_NORMAL = "일반 대화"
+CHAT_MENURCMD = "메뉴 추천"
+CHAT_MENURCMD_MYCOND = "본인 상태 알림 및 관련 메뉴 추천"
+CHAT_MENURCMD_MYTASTE = "먹고 싶은 메뉴 설명 및 추천"
+
+CHAT_TYPES = [CHAT_NORMAL, CHAT_MENURCMD, CHAT_MENURCMD_MYCOND, CHAT_MENURCMD_MYTASTE]
 
 @app.route("/aiagent")
 def aiagent():
+    global messages
+    messages = []
     return render_template('aiagent.html')
+
+def classify_request(user_input):
+    string_types = "".join([f"- {item}\n" for item in CHAT_TYPES])
+    prompt = f"""
+    다음 문장이 어떤 유형인지 분류해줘. 가능한 카테고리는 다음과 같아:
+    {string_types}
+    
+    문장: "{user_input}"
+    
+    답변 형식은 반드시 다음과 같이 해줘:
+    
+    분류: [카테고리명]
+    
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "너는 입력된 문장을 카테고리로 분류하는 AI야."},
+                  {"role": "user", "content": prompt}],
+        temperature=0  # 일관된 응답을 위해 0으로 설정
+    )
+
+    # 응답에서 카테고리 추출
+    result_text = response.choices[0].message.content
+    category = result_text.split("분류: ")[-1].strip()
+    print(category)
+    
+    return category
+
+def extract_and_search_menu(text):
+    prompt = f"""
+    다음 문장에서 메뉴 추천 관련 정보를 추출하고, 추천해줘:
+    
+    문장: "{text}"
+    
+    답변 형식은 반드시 다음과 같이 해줘:
+    
+    메뉴1,메뉴2,메뉴3,메뉴4,메뉴5,...
+    
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-4-turbo",
+        messages=[{"role": "system", "content": "너는 입력된 문장에서 추천하는 메뉴를 추출하는 AI야."},
+                  {"role": "user", "content": prompt}],
+        temperature=0  # 일관된 응답을 위해 0으로 설정
+    )
+
+    # 응답에서 카테고리 추출
+    result_text = response.choices[0].message.content
+    menus = result_text.split(",")
+        
+    return menus
 
 @app.route("/chat", methods=["POST"])
 def chat():
