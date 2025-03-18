@@ -186,7 +186,7 @@ def classify_request(user_input):
 
 def extract_and_search_menu(text):
     prompt = f"""
-    다음 문장에서 메뉴 추천 관련 정보를 추출하고, 추천해줘:
+    다음 문장을 읽고 문장에서 추천하거나 먹기 좋은 메뉴를 추출해줘:
     
     문장: "{text}"
     
@@ -198,7 +198,7 @@ def extract_and_search_menu(text):
 
     response = client.chat.completions.create(
         model="gpt-4-turbo",
-        messages=[{"role": "system", "content": "너는 입력된 문장에서 추천하는 메뉴를 추출하는 AI야."},
+        messages=[{"role": "system", "content": "너는 입력된 문장에서 추천하는 메뉴나 먹기 좋은 메뉴를 추출하는 AI야."},
                   {"role": "user", "content": prompt}],
         temperature=0  # 일관된 응답을 위해 0으로 설정
     )
@@ -224,7 +224,11 @@ def chat():
     except Exception as e:
         bot_reply = f"오류 발생: {str(e)}"
 
-    return jsonify({"reply": bot_reply})
+    if category in [CHAT_MENURCMD, CHAT_MENURCMD_MYTASTE, CHAT_MENURCMD_MYCOND]:
+        menus = extract_and_search_menu(bot_reply)
+    if len(menus) > 0:
+        add_str = "[{}]".format(",".join(menus))
+    return jsonify({"reply": f"[{category}] "+bot_reply+ "추출된 메뉴: "+add_str})
 
 if __name__ == "__main__":
     app.run(debug=True)
