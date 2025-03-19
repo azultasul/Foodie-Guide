@@ -11,6 +11,7 @@
         .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
         .user { background-color: #d1e7fd; text-align: right; }
         .bot { background-color: #f1f1f1; text-align: left; }
+        .botlink { width:fit-content; background-color: #f1f1f1; text-align: left; }
         input { width: 80%; padding: 8px; }
         button { padding: 8px 10px; }
     </style>
@@ -46,6 +47,9 @@
                 data: JSON.stringify({ message: userMessage }),
                 success: function(response) {
                     $("#chatbox").append(`<div class='message bot'>${response.reply}</div>`);
+                    $("#chatbox").append(`<div class='message botlink'>
+                        <a href="navermap?menus=${response.menus}">전체보기</a>
+                        </div>`);
                     $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
                 }
             });
