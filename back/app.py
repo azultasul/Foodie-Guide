@@ -33,10 +33,10 @@ def home():
     messages = []
     return render_template("index.html")
 
-@app.route("/navermap")
+@app.route("/navermap", methods=["GET"])
 def navermap():
     # 검색어 및 요청 URL 설정
-    query = "강남역 카페"  # 검색어 (예: "카페", "맛집", "미용실" 등)
+    query = request.args.get("menus")  # 검색어 (예: "카페", "맛집", "미용실" 등)
     display = 5  # 출력할 검색 결과 개수 (최대 5)
     start = 1  # 검색 시작 위치 (1부터 시작)
     sort = "random"  # 정렬 방식 (sim: 유사도순, random: 랜덤)
@@ -66,7 +66,7 @@ def navermap():
             print(item)
             # print(f"이름: {item["title"]}, 위치: {float(item["mapx"])/1e7}, {float(item["mapy"])/1e7}")
             # print(f"이름: {item['title']}\n주소: {item['address']}\n전화번호: {item['telephone']}\n링크: {item['link']}\n")
-        return render_template("navermap.html", NCP_CLIENT_ID=NCP_CLIENT_ID, items=items)
+        return render_template("navermap.html", NCP_CLIENT_ID=NCP_CLIENT_ID, items=items, query=query)
     else:
         print("Error Code:", response.status_code)
         print("Error Message:", response.content)
@@ -165,7 +165,7 @@ def extract_and_search_menu(text):
     """
 
     response = client.chat.completions.create(
-        model="gpt-4-turbo",
+        model="gpt-3.5-turbo",
         messages=[{"role": "system", "content": "너는 입력된 문장에서 추천하는 메뉴나 먹기 좋은 메뉴를 추출하는 AI야."},
                   {"role": "user", "content": prompt}],
         temperature=0  # 일관된 응답을 위해 0으로 설정
@@ -192,11 +192,21 @@ def chat():
     except Exception as e:
         bot_reply = f"오류 발생: {str(e)}"
 
+    link_exist = False
     if category in [CHAT_MENURCMD, CHAT_MENURCMD_MYTASTE, CHAT_MENURCMD_MYCOND]:
         menus = extract_and_search_menu(bot_reply)
+        link_exist = True
+    else:
+        menus = []
+        link_exist = False
+    print(menus)
     if len(menus) > 0:
         add_str = "[{}]".format(",".join(menus))
-    return jsonify({"reply": f"[{category}] "+bot_reply+ "추출된 메뉴: "+add_str})
+    
+    return jsonify({"reply": bot_reply,
+                    "menus": ",".join(menus),
+                    "link_exist": link_exist,
+                    "category": category})
 
 if __name__ == "__main__":
     app.run(debug=True)
