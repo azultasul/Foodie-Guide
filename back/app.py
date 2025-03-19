@@ -37,6 +37,8 @@ def home():
 def navermap():
     # 검색어 및 요청 URL 설정
     menus_str = request.args.get("menus")  # 검색어 (예: "카페", "맛집", "미용실" 등)
+    if menus_str == None:
+        menus_str = "맛집"
     menus = menus_str.split(",")
     items = []
     for menu in menus:
