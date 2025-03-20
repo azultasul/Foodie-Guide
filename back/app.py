@@ -140,11 +140,12 @@ def reverse_geocode(lat, lon):
         return "주소를 찾을 수 없습니다."
 
 CHAT_NORMAL = "일반 대화"
+CHAT_ASKMORE = "메뉴 추천 없이 일반 질문"
 CHAT_MENURCMD = "메뉴 추천"
 CHAT_MENURCMD_MYCOND = "본인 상태 알림 및 관련 메뉴 추천"
 CHAT_MENURCMD_MYTASTE = "먹고 싶은 메뉴 설명 및 추천"
 
-CHAT_TYPES = [CHAT_NORMAL, CHAT_MENURCMD, CHAT_MENURCMD_MYCOND, CHAT_MENURCMD_MYTASTE]
+CHAT_TYPES = [CHAT_NORMAL, CHAT_ASKMORE, CHAT_MENURCMD, CHAT_MENURCMD_MYCOND, CHAT_MENURCMD_MYTASTE]
 
 @app.route("/aiagent")
 def aiagent():
