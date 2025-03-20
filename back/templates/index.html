@@ -59,7 +59,7 @@
 
     <h1>Foodie Guide</h1>
 
-    <form action="/navermap" method="post">
+    <form action="/navermap" method="post" id="formNaverMap">
     <div style="width: fit-content; display: flex; justify-content: space-between;">
         <h3>현재 위치: </h3>
         <button type="button" id="locationButton" style="margin:10px" onclick="getUserLocation()">위치 가져오기</button>
@@ -76,6 +76,13 @@
     <button onclick="sendMessage()">보내기</button>
 
     <script>
+        document.getElementById("formNaverMap").addEventListener("submit", function(event) {
+        var address = document.getElementById("address").value;
+            if (address.trim() === "") {
+                alert("위치 정보가 없습니다.\n[위치 가져오기] 버튼을 눌러주세요.");
+                event.preventDefault(); // 폼 제출 방지
+            }
+        });
         function sendMessage() {
             let userMessage = $("#userInput").val();
             if (!userMessage) return;
