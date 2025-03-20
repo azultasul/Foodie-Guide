@@ -71,7 +71,7 @@ def navermap():
             data = response.json()
             for item in data["items"]:
                 one = {}
-                one["title"] = item["title"].replace("<b>", "").replace("</b>", "")
+                one["title"] = item["title"].replace("<b>", "").replace("</b>", "").replace("&amp;", "&")
                 one["lat"] = float(item["mapy"])/1e7
                 one["lng"] = float(item["mapx"])/1e7
                 one["link"] = item["link"]
