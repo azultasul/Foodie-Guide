@@ -36,10 +36,24 @@
     <script>
         // 1. 기본 지도 생성
         var mapOptions = {
-            center: new naver.maps.LatLng(37.49794, 127.02761), // 강남역 좌표
+            center: new naver.maps.LatLng({{latitude}}, {{longitude}}), // 강남역 좌표
             zoom: 15
         };
         var map = new naver.maps.Map('map', mapOptions);
+
+        var userLocation = new naver.maps.LatLng({{latitude}}, {{longitude}});
+                    map.setCenter(userLocation);
+
+                    // 사용자 위치에 마커 추가
+                    var userMarker = new naver.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        icon: {
+                            content: '<div style="color: red; font-weight: bold;">📍 내 위치</div>',
+                            anchor: new naver.maps.Point(12, 12)
+                        }
+                    });
+
         let arr = [];
         {% for item in items %}
             // 2. 마커 추가
@@ -66,53 +80,7 @@
                 });
             })();
         {% endfor %}
-        // 5. 사용자의 현재 위치 가져오기
-        function getUserLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var userLat = position.coords.latitude;
-                    var userLng = position.coords.longitude;
-
-                    var userLocation = new naver.maps.LatLng(userLat, userLng);
-                    map.setCenter(userLocation);
-
-                    // 사용자 위치에 마커 추가
-                    var userMarker = new naver.maps.Marker({
-                        position: userLocation,
-                        map: map,
-                        icon: {
-                            content: '<div style="color: red; font-weight: bold;">📍 내 위치</div>',
-                            anchor: new naver.maps.Point(12, 12)
-                        }
-                    });
-
-                    // 정보창 추가
-                    var userInfoWindow = new naver.maps.InfoWindow({
-                        content: '<div style="padding:10px;">여기가 내 위치!</div>'
-                    });
-
-                    naver.maps.Event.addListener(userMarker, "click", function () {
-                        userInfoWindow.open(map, userMarker);
-                    });
-
-                }, function (error) {
-                    alert("위치 정보를 가져올 수 없습니다.");
-                });
-            } else {
-                alert("이 브라우저에서는 Geolocation이 지원되지 않습니다.");
-            }
-        }
-
-        // 현재 위치 버튼 추가
-        var locationButton = document.createElement("button");
-        locationButton.innerText = "내 위치 찾기";
-        locationButton.style.position = "absolute";
-        locationButton.style.top = "10px";
-        locationButton.style.left = "10px";
-        locationButton.style.zIndex = "1000";
-        locationButton.onclick = getUserLocation;
-
-        document.body.appendChild(locationButton);
+        
 
     </script>
     

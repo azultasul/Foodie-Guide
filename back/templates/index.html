@@ -23,12 +23,53 @@
             height: 500px;
         }
     </style>
+    <script>
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+                    console.log(userLat, userLng);
+                    $("#latitude").val(userLat);
+                    $("#longitude").val(userLng);
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/navergeocode",
+                        contentType: "application/json",
+                        data: JSON.stringify({ latitude:userLat, longitude:userLng }),
+                        success: function(response) {
+                            document.getElementById("locationButton").textContent = response.address;
+                            document.getElementById("address").textContent = response.address[2];
+                            document.getElementById("locationButton").disabled = true;        
+                        }
+                    });
+
+                }, function (error) {
+                    alert("위치 정보를 가져올 수 없습니다.");
+                });
+            } else {
+                alert("이 브라우저에서는 Geolocation이 지원되지 않습니다.");
+            }
+        }
+    </script>
 </head>
 <body>
 
     <h1>Foodie Guide</h1>
 
+    <form action="/navermap" method="get">
+    <div style="width: fit-content; display: flex; justify-content: space-between;">
+        <h3>현재 위치: </h3>
+        <button type="button" id="locationButton" style="margin:10px" onclick="getUserLocation()">위치 가져오기</button>
+    </div>
+    <input type="hidden" name="latitude" id="latitude">
+    <input type="hidden" name="longitude" id="longitude">
+    <input type="hidden" name="address" id="address">
+
     <div id="chatbox"></div>
+    </form>
+    
     <input type="text" id="userInput" placeholder="메시지를 입력하세요..." value="오늘 매운게 땡겨">
     <button onclick="sendMessage()">보내기</button>
 
@@ -48,7 +89,7 @@
                 success: function(response) {
                     $("#chatbox").append(`<div class='message bot'>${response.reply}</div>`);
                     $("#chatbox").append(`<div class='message botlink'>
-                        <a href="navermap?menus=${response.menus}">전체보기</a>
+                          <button type="submit">전체 보기</button>  
                         </div>`);
                     $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
                 }

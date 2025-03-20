@@ -37,13 +37,25 @@ def home():
 @app.route("/navermap", methods=["GET"])
 def navermap():
     # 검색어 및 요청 URL 설정
-    menus_str = request.args.get("menus")  # 검색어 (예: "카페", "맛집", "미용실" 등)
+    menus_str = request.args.get("menus", None)  # 검색어 (예: "카페", "맛집", "미용실" 등)
     if menus_str == None:
         menus_str = "맛집"
     menus = menus_str.split(",")
+        
+        
+    latitude = request.form.get("latitude", None)  # 위도
+    longitude = request.form.get("longitude", None)  # 경도
+    address = request.form.get("address", None)  # 주소
+    # if latitude != None and longitude != None:
+    #     address = reverse_geocode(latitude, longitude)
+    # else:
+    #     address = "강남역"
+    #     latitude = 37.49794
+    #     longitude = 127.02761
+    
     items = []
     for menu in menus:
-        query = "강남역" + menu
+        query = address + " " + menu
         display = 5  # 출력할 검색 결과 개수 (최대 5)
         start = 1  # 검색 시작 위치 (1부터 시작)
         sort = "random"  # 정렬 방식 (sim: 유사도순, random: 랜덤)
@@ -76,21 +88,31 @@ def navermap():
             print("Error Message:", response.content)
             return render_template("navermap.html")
 
-    return render_template("navermap.html", NCP_CLIENT_ID=NCP_CLIENT_ID, query=menus_str, items=items)
+    return render_template("navermap.html", latitude=latitude, longitude=longitude, address=address,
+                           NCP_CLIENT_ID=NCP_CLIENT_ID, query=menus_str, items=items)
 
-@app.route("/navergeocode")
+@app.route("/navergeocode", methods=["POST", "GET"])
 def navergeocode():
-    latitude = 37.5665   # 위도 (서울)
-    longitude = 126.978  # 경도 (서울)
-    address = reverse_geocode(latitude, longitude)
-    
+    if request.method == "GET":
+        latitude = 37.5665   # 위도 (서울)
+        longitude = 126.978  # 경도 (서울)
+        address = reverse_geocode(latitude, longitude)
+    else:
+        latitude = request.json["latitude"]
+        longitude = request.json["longitude"]
+        print('/navergeocode:',latitude, longitude)
+        if latitude == None or longitude == None:
+            address = ""
+        else:
+            address = reverse_geocode(latitude, longitude)
+        
     items = {}
     items['latitude'] = latitude
     items['longitude'] = longitude
     items['longitude'] = longitude
     items['address'] = address
 
-    return items
+    return jsonify(items)
 
 
 def reverse_geocode(lat, lon):
