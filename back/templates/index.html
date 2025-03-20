@@ -41,6 +41,7 @@
                         success: function(response) {
                             document.getElementById("locationButton").textContent = response.address;
                             document.getElementById("address").textContent = response.address[2];
+                            $("#address").val(response.address[2]);
                             document.getElementById("locationButton").disabled = true;        
                         }
                     });
