@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Naver Maps API</title>
+    <title>Foodie Guide</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
@@ -14,17 +14,16 @@
         input { width: 80%; padding: 8px; }
         button { padding: 8px 10px; }
         #container { display: flex; }
-        #map { flex:1; height: 500px; }
-        #iframe { width: 900px; height: 500px; border: none; }
+        #map { flex:1; height: 700px; }
+        #iframe { width: 900px; height: 700px; border: none; }
     </style>
 
 	<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId={{NCP_CLIENT_ID}}"></script>
 </head>
 <body>
 
-    <h1>Naver 지도 API</h1>
+
     <h3> 검색어: {{query}}</h3>
-    <h3> 상위 5개 출력</h3>
         
     <!-- <button onclick="getLocation()">위치 가져오기</button> -->
     <!-- <p id="location">위치를 가져오려면 버튼을 클릭하세요.</p> -->
