@@ -7,21 +7,20 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #container { display: flex; }
+        #navigator {width: 240px;margin: 10px;}
+        #main { flex:1;}
         #chatbox { width: 100%; margin: auto; border: 1px solid #ddd; padding: 10px; height: 400px; overflow-y: auto; }
         .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
         .user { background-color: #d1e7fd; text-align: right; }
         .bot { background-color: #f1f1f1; text-align: left; }
+        .example { width:100%; background-color: #eeeeff; text-align: left; border:1px; cursor: pointer; }
         .botlink { width:fit-content; background-color: #f1f1f1; text-align: left; }
         input { width: 80%; padding: 8px; }
         button { padding: 8px 10px; }
-    </style>
-
-	<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId={{NCP_CLIENT_ID}}"></script>
-    <style>
-        #map {
-            width: 100%;
-            height: 500px;
-        }
+        #sendCombo {display:flex; width: 100%; padding:10px;}
+        #userInput {flex:1;}
+        #sendBox { width: 20%;}
     </style>
     <script>
         function getUserLocation() {
@@ -53,27 +52,39 @@
                 alert("이 브라우저에서는 Geolocation이 지원되지 않습니다.");
             }
         }
+        
     </script>
 </head>
 <body>
 
     <h1>Foodie Guide</h1>
 
-    <form action="/navermap" method="post" id="formNaverMap">
-    <div style="width: fit-content; display: flex; justify-content: space-between;">
-        <h3>현재 위치: </h3>
-        <button type="button" id="locationButton" style="margin:10px" onclick="getUserLocation()">위치 가져오기</button>
+    <div id="container">
+        <div id="navigator">
+            <button class='message example'>오늘은 양식이 먹고 싶은데 추천해줘</button>
+            <button class='message example'>분식이 땡기는데 분식 추천해줘</button>
+            <button class='message example'>배가 아픈데 어느 음식을 먹으면 좋을까?</button>
+        </div>
+        <div id="main">
+        <form action="/navermap" method="post" id="formNaverMap">
+            <div style="width: fit-content; display: flex; justify-content: space-between;">
+                <h3>현재 위치: </h3>
+                <button type="button" id="locationButton" style="margin:10px" onclick="getUserLocation()">위치 가져오기</button>
+            </div>
+            <input type="hidden" name="latitude" id="latitude">
+            <input type="hidden" name="longitude" id="longitude">
+            <input type="hidden" name="address" id="address">
+            <input type="hidden" name="menus" id="menus">
+        
+            <div id="chatbox"></div>
+        </form>
+        <div id="sendCombo">
+            <input type="text" id="userInput" placeholder="메시지를 입력하세요..." value=" ">
+            <button id="sendButton" onclick="sendMessage()">보내기</button>
+        </div>
+        
     </div>
-    <input type="hidden" name="latitude" id="latitude">
-    <input type="hidden" name="longitude" id="longitude">
-    <input type="hidden" name="address" id="address">
-    <input type="hidden" name="menus" id="menus">
-
-    <div id="chatbox"></div>
-    </form>
     
-    <input type="text" id="userInput" placeholder="메시지를 입력하세요..." value="분식이 땡기는데 분식 메뉴 추천해줘">
-    <button onclick="sendMessage()">보내기</button>
 
     <script>
         document.getElementById("formNaverMap").addEventListener("submit", function(event) {
@@ -101,7 +112,7 @@
                     $("#chatbox").append(`<div class='message botlink'>
                           <button type="submit">전체 보기</button>  
                         </div>`);
-                    $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
+                    $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight, $("#chatbox")[0].clientHeight);
                 }
             });
         }
@@ -111,7 +122,15 @@
         });
 
         $("#chatbox").append(`<div class='message bot'>${"안녕! 무엇을 도와줄까?"}</div>`);
+        
+        document.querySelectorAll(".example").forEach(button => {
+            button.addEventListener("click", function() {
+                document.getElementById("userInput").value = this.innerText;
+                sendMessage();
+            });
+        });
     </script>
+    
 
 </body>
 </html>
