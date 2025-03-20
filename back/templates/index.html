@@ -58,7 +58,7 @@
 
     <h1>Foodie Guide</h1>
 
-    <form action="/navermap" method="get">
+    <form action="/navermap" method="post">
     <div style="width: fit-content; display: flex; justify-content: space-between;">
         <h3>현재 위치: </h3>
         <button type="button" id="locationButton" style="margin:10px" onclick="getUserLocation()">위치 가져오기</button>
@@ -66,6 +66,7 @@
     <input type="hidden" name="latitude" id="latitude">
     <input type="hidden" name="longitude" id="longitude">
     <input type="hidden" name="address" id="address">
+    <input type="hidden" name="menus" id="menus">
 
     <div id="chatbox"></div>
     </form>
@@ -87,6 +88,7 @@
                 contentType: "application/json",
                 data: JSON.stringify({ message: userMessage }),
                 success: function(response) {
+                    document.getElementById("menus").value = response.menus;
                     $("#chatbox").append(`<div class='message bot'>${response.reply}</div>`);
                     $("#chatbox").append(`<div class='message botlink'>
                           <button type="submit">전체 보기</button>  

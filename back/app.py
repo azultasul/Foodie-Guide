@@ -34,24 +34,19 @@ def home():
     messages.append({"role": "system", "content": "너는 음식을 추천하는 AI야."})
     return render_template("index.html")
 
-@app.route("/navermap", methods=["GET"])
+@app.route("/navermap", methods=["POST"])
 def navermap():
-    # 검색어 및 요청 URL 설정
-    menus_str = request.args.get("menus", None)  # 검색어 (예: "카페", "맛집", "미용실" 등)
-    if menus_str == None:
-        menus_str = "맛집"
-    menus = menus_str.split(",")
-        
-        
+    
     latitude = request.form.get("latitude", None)  # 위도
     longitude = request.form.get("longitude", None)  # 경도
     address = request.form.get("address", None)  # 주소
-    # if latitude != None and longitude != None:
-    #     address = reverse_geocode(latitude, longitude)
-    # else:
-    #     address = "강남역"
-    #     latitude = 37.49794
-    #     longitude = 127.02761
+
+    menus_str = request.form.get("menus", None)  # 검색어 (예: "카페", "맛집", "미용실" 등)
+    if menus_str == None:
+        menus_str = "맛집"
+    menus = menus_str.split(",")
+
+    print("/navermap:", latitude, longitude, address, menus_str)
     
     items = []
     for menu in menus:
