@@ -31,6 +31,7 @@ def sitemap():
 def home():
     global messages
     messages = []
+    messages.append({"role": "system", "content": "너는 음식을 추천하는 AI야."})
     return render_template("index.html")
 
 @app.route("/navermap", methods=["GET"])
