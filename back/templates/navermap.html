@@ -67,7 +67,7 @@
                 // 3. 정보창 추가
                 var infoWindow = new naver.maps.InfoWindow({
                     // content: '<div style="padding:10px;">강남역 스타벅스</div>'
-                    content: '<a href="{{item['link']}}"><div style="padding:10px;">{{item['title']}}</div></a>'
+                    content: '<a href="#" onclick="reloadIframe(\'{{address}} {{item["title"]}}\')"><div style="padding:10px;">{{item['title']}}</div></a>'
                 });
 
                 // 4. 마커 클릭 시 정보창 열기
@@ -80,6 +80,13 @@
                 });
             })();
         {% endfor %}
+        
+    
+        function reloadIframe(name) {
+            var iframe = document.getElementById("iframe");
+            var src = "https://map.naver.com/p/search/"+name;
+            iframe.src = src; // 동일한 URL을 다시 할당하여 리렌더링
+        }
         
 
     </script>
