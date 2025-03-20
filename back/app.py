@@ -31,7 +31,7 @@ def sitemap():
 def home():
     global messages
     messages = []
-    messages.append({"role": "system", "content": "너는 음식을 추천하는 AI야."})
+    messages.append({"role": "system", "content": "너는 음식 메뉴를 추천하는 AI야."})
     return render_template("index.html")
 
 @app.route("/navermap", methods=["POST"])
@@ -83,8 +83,19 @@ def navermap():
             print("Error Message:", response.content)
             return render_template("navermap.html")
 
+    nearest_idx = calculate_nearest_item_index(items, float(latitude), float(longitude))
     return render_template("navermap.html", latitude=latitude, longitude=longitude, address=address,
-                           NCP_CLIENT_ID=NCP_CLIENT_ID, query=menus_str, items=items)
+                           NCP_CLIENT_ID=NCP_CLIENT_ID, query=menus_str, items=items, nearest_idx=nearest_idx)
+
+def calculate_nearest_item_index(items, latitude, longitude):
+    min_distance = 1e9
+    nearest_index = -1
+    for i, item in enumerate(items):
+        distance = (item["lat"] - latitude)**2 + (item["lng"] - longitude)**2
+        if distance < min_distance:
+            min_distance = distance
+            nearest_index = i
+    return nearest_index
 
 @app.route("/navergeocode", methods=["POST", "GET"])
 def navergeocode():
@@ -135,10 +146,10 @@ def reverse_geocode(lat, lon):
         return "주소를 찾을 수 없습니다."
 
 CHAT_NORMAL = "일반 대화"
-CHAT_ASKMORE = "메뉴 추천 없이 일반 질문"
-CHAT_MENURCMD = "메뉴 추천"
-CHAT_MENURCMD_MYCOND = "본인 상태 알림 및 관련 메뉴 추천"
-CHAT_MENURCMD_MYTASTE = "먹고 싶은 메뉴 설명 및 추천"
+CHAT_ASKMORE = "음식점 메뉴 추천 없이 일반 질문"
+CHAT_MENURCMD = "음식점 메뉴 추천"
+CHAT_MENURCMD_MYCOND = "본인 상태 알림 및 관련 음식점 메뉴 추천"
+CHAT_MENURCMD_MYTASTE = "먹고 싶은 음식점 메뉴 설명 및 추천"
 
 CHAT_TYPES = [CHAT_NORMAL, CHAT_ASKMORE, CHAT_MENURCMD, CHAT_MENURCMD_MYCOND, CHAT_MENURCMD_MYTASTE]
 
@@ -146,7 +157,7 @@ CHAT_TYPES = [CHAT_NORMAL, CHAT_ASKMORE, CHAT_MENURCMD, CHAT_MENURCMD_MYCOND, CH
 def aiagent():
     global messages
     messages = []
-    messages.append({"role": "system", "content": "너는 음식을 추천하는 AI야."})
+    messages.append({"role": "system", "content": "너는 음식 메뉴를 추천하는 AI야."})
     return render_template('aiagent.html')
 
 def classify_request(user_input):

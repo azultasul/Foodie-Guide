@@ -31,7 +31,7 @@
 
     <div id="container">
         <div id="map"></div>
-        <iframe id="iframe" src="https://map.naver.com/p/search/%EC%98%A4%EB%8A%98%EC%9D%98%20%EC%B4%88%EB%A1%9D%EA%B9%80%EB%B0%A5/"></iframe>
+        <iframe id="iframe" src="https://map.naver.com/p/search/{{address}} {{items[nearest_idx]["title"]}}"></iframe>
     </div>
     <script>
         // 1. 기본 지도 생성
@@ -80,14 +80,13 @@
                 });
             })();
         {% endfor %}
-        
     
         function reloadIframe(name) {
             var iframe = document.getElementById("iframe");
             var src = "https://map.naver.com/p/search/"+name;
             iframe.src = src; // 동일한 URL을 다시 할당하여 리렌더링
         }
-        
+    
 
     </script>
     
