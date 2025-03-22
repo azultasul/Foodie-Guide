@@ -4,7 +4,7 @@ import openai
 import os
 from dotenv import load_dotenv
 import requests
-
+from RAG import RAG
 
 load_dotenv() 
 
@@ -217,8 +217,15 @@ def extract_and_search_menu(text):
 def chat():
     user_message = request.json["message"]
     global messages
-    messages.append({"role": "user", "content": user_message})
+    rag = RAG(RAG.HEALTH)
+    rag.load_vector_index()
     category = classify_request(user_message)
+    print("대화 카테고리:", category)
+    if category == CHAT_MENURCMD_MYCOND:
+        messages.append({"role": "user", "content": rag.search_and_wrap(user_message)})
+    else:
+        messages.append({"role": "user", "content": user_message})
+        
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
