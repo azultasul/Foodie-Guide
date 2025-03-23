@@ -40,9 +40,17 @@ def navermap():
     latitude = request.form.get("latitude", None)  # 위도
     longitude = request.form.get("longitude", None)  # 경도
     address = request.form.get("address", None)  # 주소
-
     menus_str = request.form.get("menus", None)  # 검색어 (예: "카페", "맛집", "미용실" 등)
-    if menus_str == None:
+
+    print("/navermap:", latitude, longitude, address, menus_str)
+    
+    items = search_store(address, menus_str)
+    nearest_idx = calculate_nearest_store_index(items, float(latitude), float(longitude))
+    return render_template("navermap.html", latitude=latitude, longitude=longitude, address=address,
+                           NCP_CLIENT_ID=NCP_CLIENT_ID, query=menus_str, items=items, nearest_idx=nearest_idx)
+
+def search_store(address, menus_str):
+    if menus_str == None or menus_str == "":
         menus_str = "맛집"
     menus = menus_str.split(",")
 
@@ -76,18 +84,14 @@ def navermap():
                 one["lng"] = float(item["mapx"])/1e7
                 one["link"] = item["link"]
                 items.append(one)
-                # print(item.category)
                 
         else:
             print("Error Code:", response.status_code)
             print("Error Message:", response.content)
-            return render_template("navermap.html")
+            # return render_template("navermap.html")
+    return items
 
-    nearest_idx = calculate_nearest_item_index(items, float(latitude), float(longitude))
-    return render_template("navermap.html", latitude=latitude, longitude=longitude, address=address,
-                           NCP_CLIENT_ID=NCP_CLIENT_ID, query=menus_str, items=items, nearest_idx=nearest_idx)
-
-def calculate_nearest_item_index(items, latitude, longitude):
+def calculate_nearest_store_index(items, latitude, longitude):
     min_distance = 1e9
     nearest_index = -1
     for i, item in enumerate(items):
@@ -188,7 +192,7 @@ def classify_request(user_input):
     
     return category
 
-def extract_and_search_menu(text):
+def extract_menus_from_text(text):
     prompt = f"""
     다음 문장을 읽고 문장에서 추천하거나 먹기 좋은 메뉴를 추출해줘:
     
@@ -237,7 +241,7 @@ def chat():
 
     link_exist = False
     if category in [CHAT_MENURCMD, CHAT_MENURCMD_MYTASTE, CHAT_MENURCMD_MYCOND]:
-        menus = extract_and_search_menu(bot_reply)
+        menus = extract_menus_from_text(bot_reply)
         link_exist = True
     else:
         menus = []
