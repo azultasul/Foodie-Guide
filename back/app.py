@@ -2,6 +2,8 @@ from flask import Flask, jsonify, render_template, request, session
 from flask_cors import CORS
 import openai
 import os
+import numpy as np
+from math import radians, sin, cos, sqrt, atan2
 from dotenv import load_dotenv
 import requests
 from RAG import RAG
@@ -84,6 +86,10 @@ def search_store(address, menus_str):
                 one["lat"] = float(item["mapy"])/1e7
                 one["lng"] = float(item["mapx"])/1e7
                 one["link"] = item["link"]
+                dist = haversine(one["lat"], one["lng"], session['latitude'], session['longitude'])
+                one["dist"] = "{:.1f}".format(dist)
+                one["category"] = item["category"]
+                one["address"] = item["address"]
                 items.append(one)
                 
         else:
@@ -91,6 +97,24 @@ def search_store(address, menus_str):
             print("Error Message:", response.content)
             # return render_template("navermap.html")
     return items
+
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371  # 지구 반지름 (단위: km)
+
+    # 위도와 경도를 라디안 단위로 변환
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+
+    # 위도/경도의 차이 계산
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    # Haversine 공식
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    distance = R * c
+    return distance
+
 
 def calculate_nearest_store_index(items, latitude, longitude):
     min_distance = 1e9
@@ -122,7 +146,10 @@ def navergeocode():
     items['longitude'] = longitude
     items['longitude'] = longitude
     items['address'] = address
+    
     session['address'] = address
+    session['latitude'] = latitude
+    session['longitude'] = longitude
 
     return jsonify(items)
 
@@ -260,9 +287,13 @@ def chat():
     print(menus)
     if len(menus) > 0:
         add_str = "[{}]".format(",".join(menus))
+
+    items = search_store(session['address'], menus_str=",".join(menus))
+    print("가게 정보", items)
     
     return jsonify({"reply": bot_reply + "추천하는 메뉴: " + add_str,
                     "menus": ",".join(menus),
+                    "stores": items[:3],
                     "link_exist": link_exist,
                     "category": category})
 

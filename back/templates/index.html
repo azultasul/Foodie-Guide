@@ -15,7 +15,8 @@
         .user { background-color: #d1e7fd; text-align: right; }
         .bot { background-color: #f1f1f1; text-align: left; }
         .example { width:100%; background-color: #eeeeff; text-align: left; border:1px; cursor: pointer; }
-        .botlink { width:fit-content; background-color: #f1f1f1; text-align: left; }
+        .botlink { width:fit-content; background-color: #d1ffd1; text-align: left; }
+        .store { width:fit-content; background-color: #d1ffd1; text-align: left; }
         input { width: 80%; padding: 8px; }
         button { padding: 8px 10px; }
         #sendCombo {display:flex; width: 100%; padding:10px;}
@@ -118,9 +119,16 @@
                     document.getElementById("menus").value = response.menus;
                     $("#chatbox").append(`<div class='message bot'>${response.reply}</div>`);
                     if (response.link_exist === true) {
-                    $("#chatbox").append(`<div class='message botlink'>
-                        <button type="submit">전체 보기</button>  
-                    </div>`);
+                        if (response.stores && Array.isArray(response.stores)) {
+                            for (let i = 0; i < response.stores.length; i++) {
+                                $("#chatbox").append(`<div class='message store'>
+                                                    ${response.stores[i].title} ${response.stores[i].dist}km ${response.stores[i].category}
+                                                    </div>`);
+                            }
+                        }
+                        $("#chatbox").append(`<div class='message botlink'>
+                            <button type="submit">전체 보기</button>  
+                        </div>`);
                     }
                     $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight, $("#chatbox")[0].clientHeight);
                 }

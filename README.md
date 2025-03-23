@@ -1,7 +1,7 @@
 ## Todos ## 
 - [x] RAG - health
-- [ ] RAG - ingredients
-- [ ] UI update - add store bubble im msgs.
+- [x] RAG - ingredients
+- [x] UI update - add store bubble im msgs.
 - [ ] apply react
 - [ ] LLM advancement - using extract and search "Noun" function
 
