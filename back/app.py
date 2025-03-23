@@ -53,8 +53,6 @@ def search_store(address, menus_str):
     if menus_str == None or menus_str == "":
         menus_str = "맛집"
     menus = menus_str.split(",")
-
-    print("/navermap:", latitude, longitude, address, menus_str)
     
     items = []
     for menu in menus:
