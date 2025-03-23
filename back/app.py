@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, session
 from flask_cors import CORS
 import openai
 import os
@@ -9,6 +9,7 @@ from RAG import RAG
 load_dotenv() 
 
 app = Flask(__name__)
+app.secret_key = "1234"
 CORS(app)  # Vite 프론트엔드와 CORS 문제 방지
 
 # OpenAI
@@ -29,24 +30,26 @@ def sitemap():
 
 @app.route("/home")
 def home():
+    if not session.get('address'):  # 주소 정보가 없으면 초기화
+        session['address'] = None
     global messages
     messages = []
     messages.append({"role": "system", "content": "너는 음식 메뉴를 추천하는 AI야."})
-    return render_template("index.html")
+    return render_template("index.html", address = session['address'])
 
 @app.route("/navermap", methods=["POST"])
 def navermap():
     
     latitude = request.form.get("latitude", None)  # 위도
     longitude = request.form.get("longitude", None)  # 경도
-    address = request.form.get("address", None)  # 주소
+    session['address'] = request.form.get("address", None)  # 주소
     menus_str = request.form.get("menus", None)  # 검색어 (예: "카페", "맛집", "미용실" 등)
 
-    print("/navermap:", latitude, longitude, address, menus_str)
+    print("/navermap:", latitude, longitude, session['address'], menus_str)
     
-    items = search_store(address, menus_str)
+    items = search_store(session['address'], menus_str)
     nearest_idx = calculate_nearest_store_index(items, float(latitude), float(longitude))
-    return render_template("navermap.html", latitude=latitude, longitude=longitude, address=address,
+    return render_template("navermap.html", latitude=latitude, longitude=longitude, address=session['address'],
                            NCP_CLIENT_ID=NCP_CLIENT_ID, query=menus_str, items=items, nearest_idx=nearest_idx)
 
 def search_store(address, menus_str):
@@ -104,7 +107,7 @@ def navergeocode():
     if request.method == "GET":
         latitude = 37.5665   # 위도 (서울)
         longitude = 126.978  # 경도 (서울)
-        address = reverse_geocode(latitude, longitude)
+        address = reverse_geocode(latitude, longitude)[2]
     else:
         latitude = request.json["latitude"]
         longitude = request.json["longitude"]
@@ -112,13 +115,14 @@ def navergeocode():
         if latitude == None or longitude == None:
             address = ""
         else:
-            address = reverse_geocode(latitude, longitude)
+            address = reverse_geocode(latitude, longitude)[2]
         
     items = {}
     items['latitude'] = latitude
     items['longitude'] = longitude
     items['longitude'] = longitude
     items['address'] = address
+    session['address'] = address
 
     return jsonify(items)
 
@@ -223,6 +227,9 @@ def extract_menus_from_text(text):
 
 @app.route("/chat", methods=["POST"])
 def chat():
+    if session['address'] == None or session['address'] == "":
+        return jsonify({"reply": "주소 정보가 없습니다.", "menus": "", "link_exist": False, "category": CHAT_NORMAL})
+
     user_message = request.json["message"]
     global messages
     rag = RAG(RAG.HEALTH)

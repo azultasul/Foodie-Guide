@@ -39,8 +39,8 @@
                         data: JSON.stringify({ latitude:userLat, longitude:userLng }),
                         success: function(response) {
                             document.getElementById("locationButton").textContent = response.address;
-                            document.getElementById("address").textContent = response.address[2];
-                            $("#address").val(response.address[2]);
+                            document.getElementById("address").textContent = response.address;
+                            $("#address").val(response.address);
                             document.getElementById("locationButton").disabled = true;        
                         }
                     });
@@ -69,12 +69,20 @@
         <form action="/navermap" method="post" id="formNaverMap">
             <div style="width: fit-content; display: flex; justify-content: space-between;">
                 <h3>현재 위치: </h3>
-                <button type="button" id="locationButton" style="margin:10px" onclick="getUserLocation()">위치 가져오기</button>
+                {% if address == None or address == ""%}
+                    <button type="button" id="locationButton" style="margin:10px" onclick="getUserLocation()">위치 가져오기</button>
+                {% else %}
+                    <button type="button" id="locationButton" style="margin:10px" onclick="getUserLocation()">{{address}}</button>
+                {% endif %}
             </div>
             <input type="hidden" name="latitude" id="latitude">
             <input type="hidden" name="longitude" id="longitude">
             <input type="hidden" name="address" id="address">
             <input type="hidden" name="menus" id="menus">
+            <script>
+                $("#address").val({{address}});
+            </script>
+            
         
             <div id="chatbox"></div>
         </form>
@@ -109,9 +117,11 @@
                 success: function(response) {
                     document.getElementById("menus").value = response.menus;
                     $("#chatbox").append(`<div class='message bot'>${response.reply}</div>`);
+                    if (response.link_exist === true) {
                     $("#chatbox").append(`<div class='message botlink'>
-                          <button type="submit">전체 보기</button>  
-                        </div>`);
+                        <button type="submit">전체 보기</button>  
+                    </div>`);
+                    }
                     $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight, $("#chatbox")[0].clientHeight);
                 }
             });
