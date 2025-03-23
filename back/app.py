@@ -192,20 +192,26 @@ def classify_request(user_input):
 
 def extract_menus_from_text(text):
     prompt = f"""
-    다음 문장을 읽고 문장에서 추천하거나 먹기 좋은 메뉴를 추출해줘:
+    다음 문장을 읽고 문장에 존재하는 재료로 이루어진 음식 메뉴 Top 5를 추천해줘. 
+    일반 음식점에서 팔지 않는 재료는 메뉴에서 제외해줘.
+    차는 찻집으로 바꿔줘.
     
+    =======================================================
     문장: "{text}"
-    
+    =======================================================
     답변 형식은 반드시 다음과 같이 해줘:
     
-    메뉴1,메뉴2,메뉴3,메뉴4,메뉴5,...
+    메뉴1,메뉴2,메뉴3,메뉴4,메뉴5
     
     """
 
+    rag = RAG(RAG.INGREDIENTS)
+    rag.load_vector_index()
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{"role": "system", "content": "너는 입력된 문장에서 추천하는 메뉴나 먹기 좋은 메뉴를 추출하는 AI야."},
-                  {"role": "user", "content": prompt}],
+        messages=[{"role": "system", "content": "너는 입력된 문장에서 추천하는 메뉴나 먹기 좋은 메뉴를 제안하는 AI야."},
+                  {"role": "system", "content": "고유대명사는 제외하고 일반적인 메뉴로만 대답하고, 답변 형식은 반드시 다음과 같이 해줘: 메뉴1,메뉴2,메뉴3,메뉴4,메뉴5"},
+                  {"role": "user", "content": rag.search_and_wrap(prompt)}],
         temperature=0  # 일관된 응답을 위해 0으로 설정
     )
 
@@ -248,7 +254,7 @@ def chat():
     if len(menus) > 0:
         add_str = "[{}]".format(",".join(menus))
     
-    return jsonify({"reply": bot_reply,
+    return jsonify({"reply": bot_reply + "추천하는 메뉴: " + add_str,
                     "menus": ",".join(menus),
                     "link_exist": link_exist,
                     "category": category})
