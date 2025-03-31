@@ -77,14 +77,26 @@ def extract_menus_from_text(text):
     return menus
 
 
-def chat(user_message):
-
+def chat(user_message, message_list):
     rag = RAG(RAG.HEALTH)
     rag.load_vector_index()
     messages = []
     messages.append({"role": "system", "content": "너는 음식 메뉴를 추천하는 AI야."})
     category = classify_request(user_message)
     print("대화 카테고리:", category)
+
+    for entry in message_list:
+        if entry['fromWho'] == 'bot':
+            role = "assistant"
+        elif entry['fromWho'] == 'user':
+            role = "user"
+        
+        if isinstance(entry['cont'], list):
+            for cont_item in entry['cont']:
+                messages.append({"role": role, "content": cont_item})
+        else:
+            messages.append({"role": role, "content": entry['cont']})
+
     if category == CHAT_MENURCMD_MYCOND:
         messages.append({"role": "user", "content": rag.search_and_wrap(user_message)})
     else:
