@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, session
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -12,11 +12,15 @@ CORS(app)  # Vite 프론트엔드와 CORS 문제 방지
 # chatbot-llm 추가
 @app.route("/api/aiagent", methods=["POST"])
 def aiagent():
-    user_message = request.json.get("message")
-    message_list = request.json.get("messageList")
-    data = aiagent_model.chat(user_message, message_list)
+    user_message = request.json["message"]
+    data = aiagent_model.chat(user_message)
     
     return jsonify(data)
+
+@app.route("/api/aiagent/reset", methods=["GET"])
+def aiagent_reset():
+    session['messages'] = None
+    return True
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))

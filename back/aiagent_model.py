@@ -77,11 +77,11 @@ def extract_menus_from_text(text):
     return menus
 
 
-def chat(user_message, message_list):
+def chat(user_message):
+
     rag = RAG(RAG.HEALTH)
     rag.load_vector_index()
-    messages = []
-    messages.append({"role": "system", "content": "너는 음식 메뉴를 추천하는 AI야."})
+
     category = classify_request(user_message)
     print("대화 카테고리:", category)
 
@@ -98,14 +98,14 @@ def chat(user_message, message_list):
             messages.append({"role": role, "content": entry['cont']})
 
     if category == CHAT_MENURCMD_MYCOND:
-        messages.append({"role": "user", "content": rag.search_and_wrap(user_message)})
+        session['messages'].append({"role": "user", "content": rag.search_and_wrap(user_message)})
     else:
-        messages.append({"role": "user", "content": user_message})
+        session['messages'].append({"role": "user", "content": user_message})
         
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=messages
+            messages=session['messages']
         )
         bot_reply = response.choices[0].message.content
     except Exception as e:
