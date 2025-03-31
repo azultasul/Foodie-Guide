@@ -22,8 +22,8 @@ const Home = () => {
   const { restaurants, nearestIndex, loading, error: resError, getRestaurants } = useGetRestaurants(menus, currentLocation, currentAddress, otherLocation)
   const messageEndRef = useRef(null)
   const chatCategory = [
-    // '일반 대화',
-    // '음식점 메뉴 추천 없이 일반 질문',
+    '일반 대화',
+    '음식점 메뉴 추천 없이 일반 질문',
     '음식점 메뉴 추천',
     '본인 상태 알림 및 관련 음식점 메뉴 추천',
     '먹고 싶은 음식점 메뉴 설명 및 추천',
