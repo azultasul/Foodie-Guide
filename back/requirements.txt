@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 flask
 flask-cors
 numpy
@@ -9,3 +10,23 @@ openai
 langchain
 faiss-cpu
 tqdm
+=======
+# Python == 3.11.2
+Flask == 3.1.0
+Werkzeug == 3.1.3
+flask-cors == 5.0.1
+gunicorn == 23.0.0
+python-dotenv == 1.0.1
+langchain==0.3.21
+langchain-openai==0.3.9
+langchain-text-splitters==0.3.7
+langchain-chroma==0.2.2
+langchain-community==0.3.20
+langchain-core==0.3.45
+chromadb==0.6.3
+openai==1.66.3
+faiss-cpu==1.10.0
+scikit-learn==1.4.1.post1
+numpy==1.26.4
+tqdm==4.66.5
+>>>>>>> e0aab05af8a9c93e3fafa135c54774a6d5878375

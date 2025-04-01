@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://foodie-guide-production.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/v1/:path*",
+      "destination": "https://openapi.naver.com/v1/:path*"
+    },
+    {
+      "source": "/v2/:path*",
+      "destination": "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/:path*"
+    }
+  ]
+}

@@ -24,7 +24,10 @@ dist-ssr
 *.sw?
 
 # back
+back/foodienv/
 pyvenv.cfg
+back/chromadb/
+back/*.chroma
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -47,6 +50,8 @@ instance/
 
 # 환경 설정 파일
 .env
+.env.production
+.env.local
 *.ini
 *.cfg
 
@@ -74,4 +79,3 @@ htmlcov/
 dist/
 build/
 *.egg-info/
-

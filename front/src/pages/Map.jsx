@@ -1,38 +1,88 @@
-import { useState } from "react";
-import { predict } from "@/api/predict";
-import { naver } from "@/api/naver";
-import MapItem from "@/components/MapItem";
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import CommonBtn from '@/components/CommonBtn'
+import styles from '@/assets/style/components/map.module.css'
 
 const Map = () => {
-  const [input, setInput] = useState("");
-  const [prediction, setPrediction] = useState(null);
+  const savedMapData = sessionStorage.getItem('mapData')
+  const [mapData, setMapData] = useState(savedMapData ? JSON.parse(savedMapData) : {})
+  const mapElement = useRef(null)
+  const mapRef = useRef(null) // 지도 객체를 저장할 ref
+  const markersRef = useRef([]) // 마커들을 저장할 ref
+  const [currentMarker, setCurrentMarker] = useState(mapData?.items ? mapData?.items[mapData?.nearestIndex] : -1)
+  const navigate = useNavigate()
 
-  const handleNaverTest = async () => {
-    const result = await naver(input);
-    console.log("result", result);
-    
-    setPrediction(result);
-  };
+  useEffect(() => {
+    if (Object.keys(mapData).length === 0) {
+      navigate('/', { replace: true }) // ✅ 메인 페이지로 리다이렉트
+    }
+  }, [navigate])
+
+  useEffect(() => {
+    if (Object.keys(mapData).length === 0) return
+    if (window.naver) {
+      // 지도 초기화 (처음 한 번만 실행)
+      if (!mapRef.current) {
+        mapRef.current = new window.naver.maps.Map(mapElement.current, {
+          center: new window.naver.maps.LatLng(mapData.currentLocation.lat, mapData.currentLocation.lng),
+          zoom: 15,
+        })
+      }
+
+      // 기존 마커 제거
+      markersRef.current.forEach((marker) => marker.setMap(null))
+      markersRef.current = []
+
+      // 현재 위치 마커 추가
+      const userMarker = new window.naver.maps.Marker({
+        position: new window.naver.maps.LatLng(mapData.currentLocation.lat, mapData.currentLocation.lng),
+        map: mapRef.current,
+        icon: {
+          content: '<div style="font-size: 30px;">📍</div>',
+          anchor: new naver.maps.Point(15, 15),
+        },
+      })
+      markersRef.current.push(userMarker)
+      // 음식점 마커 추가
+      if (mapData.items) {
+        mapData.items.forEach((item, index) => {
+          const marker = new window.naver.maps.Marker({
+            position: new window.naver.maps.LatLng(item.lat, item.lng),
+            map: mapRef.current,
+            icon: `https://maps.google.com/mapfiles/ms/icons/${mapData.nearestIndex == index ? 'red' : 'blue'}-dot.png`,
+          })
+          markersRef.current.push(marker)
+
+          // 마커 클릭 시 현재 데이터 변경
+          window.naver.maps.Event.addListener(marker, 'click', () => {
+            setCurrentMarker({ ...item })
+
+            markersRef.current.forEach((m, i) => {
+              if (i == 0) return
+              m.setIcon('https://maps.google.com/mapfiles/ms/icons/blue-dot.png')
+            })
+            marker.setIcon('https://maps.google.com/mapfiles/ms/icons/red-dot.png')
+          })
+        })
+      }
+    }
+  }, [])
 
   return (
-      <div className="flex flex-col items-center gap-4 p-10">
-        <h1 className="text-2xl font-bold">naver api test222</h1>
-        <input
-          type="text"
-          placeholder="menu"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="border p-2 rounded"
-        />
-        <button onClick={handleNaverTest} className="bg-blue-500 text-white px-4 py-2 rounded">
-          Predict
-        </button>
-  
-        {prediction && prediction.map((item, index) => {
-          return <MapItem key={index} title={item.title}/>
-        })}
+    <div id="frame" className="naver">
+      <div id="sidepanel" className={styles.info}>
+        <h2 dangerouslySetInnerHTML={{ __html: `${currentMarker?.title}` }}></h2>
+        <hr />
+        <h3>🍴 위치</h3>
+        <p>{currentMarker?.address}</p>
+        <h3>🍴 대표메뉴</h3>
+        <p>{currentMarker?.menu}</p>
+        {/* <iframe id="iframe" src={`https://map.naver.com/p/search/${mapData.currentAddress} ${mapData.items[mapData.nearestIndex]?.title}`} title="Naver Map"></iframe> */}
+        {currentMarker?.link && <CommonBtn type="a" text="자세히 보기" linkTo={currentMarker?.link} />}
       </div>
-    );
+      <div ref={mapElement} className="content" />
+    </div>
+  )
 }
 
-export default Map;
+export default Map

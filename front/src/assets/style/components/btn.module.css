@@ -1,13 +1,12 @@
 .btn {
-    display: inline-block;
-    padding: 10px 15px;
-    margin-top: 4px;
-    border-radius: 20px;
-    line-height: 130%;
-    font-size: 14px;
-    background: #435f7a;
-    color: #f5f5f5;
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 20px;
+  line-height: 130%;
+  font-size: 14px;
+  background: #4d5a66;
+  color: #f5f5f5;
 }
 .btn:hover {
-    background: rgba(67, 95, 122, 0.7);
+  background: #435f7a;
 }
