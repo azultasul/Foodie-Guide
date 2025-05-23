@@ -67,6 +67,7 @@ def get_menu_message(text):
     prompt = f"""
     다음 문장을 읽고 문장에 존재하는 재료로 이루어진 음식 메뉴 Top 5를 추천해줘. 
     일반 음식점에서 팔지 않는 재료는 메뉴에서 제외해줘.
+    온수도 제외해줘.
     차는 찻집으로 바꿔줘.
     
     =======================================================
@@ -83,6 +84,7 @@ def get_menu_message(text):
     message = [
       SystemMessage(content="너는 사용자의 상태를 입력된 문장에서 판단하여 먹기 좋은 메뉴를 제안하는 AI야."),
       SystemMessage(content="너는 입력된 문장에서 사용자가 메뉴 추천을 원하지 않고 상태만 나열할 경우 적절한 의학적 답변을 주거나 먹기 좋은 메뉴를 제안하는 AI야."),
+      SystemMessage(content="고유대명사는 제외하고 일반적인 메뉴로만 대답하고, 답변 형식은 반드시 다음과 같이 해줘: 메뉴1,메뉴2,메뉴3,메뉴4,메뉴5"),
       HumanMessage(content=rag.search_and_wrap(prompt))   
     ]
     return message
