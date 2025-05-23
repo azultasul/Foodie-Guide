@@ -24,8 +24,6 @@ CHAT_MENURCMD_MYTASTE = "먹고 싶은 음식점 메뉴 설명 및 추천"
 
 CHAT_TYPES = [CHAT_NORMAL, CHAT_ASKMORE, CHAT_MENURCMD, CHAT_MENURCMD_MYCOND, CHAT_MENURCMD_MYTASTE]
 
-memory = ConversationBufferMemory(memory_key="chat_history")
-
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 # 카테고리 분류 chain
@@ -103,31 +101,37 @@ def chat(user_message, message_list):
     rag = RAG(RAG.HEALTH)
     rag.load_vector_index()
 
-    print("message_list", message_list)
-    # if message_list is []:
-    messages = []
-    messages.append(SystemMessage(content="너는 음식 메뉴를 추천하는 AI야."))
-    
+    # 메모리 초기화 및 message_list 반영
+    memory = ConversationBufferMemory(return_messages=True)
+
+    for msg in message_list:
+        if msg['fromWho'] == 'user':
+            memory.chat_memory.add_user_message(msg["cont"])
+        elif msg['fromWho'] == 'bot':
+            if isinstance(msg['cont'], list):
+                for cont_item in msg['cont']:
+                    memory.chat_memory.add_ai_message(cont_item)
+            else: 
+                memory.chat_memory.add_ai_message(msg["cont"])
+
 
     # 대화의 분류 및 봇 응답을 처리
     category = classify_chain.invoke({"user_input": user_message})
 
-    conversation = ConversationChain(llm=llm, memory=memory)
-
+    # 유저 메시지 추가
     if category == CHAT_MENURCMD_MYCOND:
-        messages.append(HumanMessage(content=rag.search_and_wrap(user_message)))
+        memory.chat_memory.add_user_message(rag.search_and_wrap(user_message))
     else:
-        messages.append(HumanMessage(content=user_message))
-        
-    
-    for message in messages:
-        conversation.memory.chat_history.add_message(message)
+        memory.chat_memory.add_user_message(user_message)
 
+    # 대화 예측
+    conversation = ConversationChain(llm=llm, memory=memory, verbose=True)
     try:
         bot_reply = conversation.predict(input=user_message)
+        memory.chat_memory.add_ai_message(bot_reply)
     except Exception as e:
         bot_reply = f"오류 발생: {str(e)}"
-    
+
     link_exist = False
     menus = []
     
