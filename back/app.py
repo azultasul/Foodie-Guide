@@ -4,20 +4,28 @@ import os
 from dotenv import load_dotenv
 import aiagent_model
 import langchain_model
+from validators import validate_input
+
 load_dotenv() 
 
 app = Flask(__name__)
-app.secret_key = "1234"
 CORS(app)  # Vite 프론트엔드와 CORS 문제 방지
 
 # chatbot-llm 추가
 @app.route("/api/aiagent", methods=["POST"])
 def aiagent():
+    data = request.get_json()
     user_message = request.json.get("message")
     message_list = request.json.get("messageList")
-    data = aiagent_model.chat(user_message, message_list)
+
+    # 입력 검증
+    validate_error = validate_input(data)
+    if validate_error :
+        return jsonify({"error": validate_error}), 400
+
+    result = aiagent_model.chat(user_message, message_list)
     
-    return jsonify(data)
+    return jsonify(result)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
