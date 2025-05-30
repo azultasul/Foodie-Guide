@@ -62,5 +62,19 @@ NAVER_CLIENT_SECRET=
   </tr>
 </table>
 
+---
+* XSS 공격 방어
+<table>
+  <tr>
+    <td style="vertical-align: middle;">
+      <img src="https://github.com/user-attachments/assets/b04e3600-f32b-426f-ade4-9fca7d2af7d7" height="100" width="350"/>
+    </td>
+    <td style="vertical-align: middle; padding-left: 20px;">
+      <img src="https://github.com/user-attachments/assets/a1be98a5-4964-4206-bf09-6882b9caaeed" width = "350" height="100"/>
+    </td>
+  </tr>
+</table>
+
+
 
 
