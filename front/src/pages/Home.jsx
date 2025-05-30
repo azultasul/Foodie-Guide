@@ -40,10 +40,12 @@ const Home = () => {
   }
   const addBotMessage = async (query) => {
     const result = await getAiagent(query)
-    const hasCat = chatCategory.includes(result.category)
+    
+    // const hasCat = chatCategory.includes(result.category)
+    const hasMenus = result.menus?.length > 0
 
     setIsLoading(false)
-    if (!hasCat) {
+    if (!hasMenus) {
       const newMessage = {
         fromWho: 'bot',
         type: 'text',
@@ -52,15 +54,15 @@ const Home = () => {
       setMessageList((prev) => [...prev, newMessage])
     } else {
       // 식당 추천해주는 경우 -> list 불러오기
-      const menus = result.menus.split(',')
+    //   const menus = result.menus.split(',')
 
       const newMessage = {
         fromWho: 'bot',
         type: 'text',
-        cont: [result.reply, `추천 메뉴: ${menus}`],
+        cont: [result.reply, `추천 메뉴: ${result.menus}`],
       }
       setMessageList((prev) => [...prev, newMessage])
-      setMenus(menus)
+      setMenus(result.menus)
     }
   }
 

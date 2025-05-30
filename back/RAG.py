@@ -94,7 +94,7 @@ class RAG(object):
         if self.index is not None:
             D, I = self.index.search(query_embedding, k=5)
             retrieved_chunks =  [self.chunks[i] for i in I[0]]
-            print("[추가된 RAG 청크]", retrieved_chunks)
+            # print("[추가된 RAG 청크]", retrieved_chunks)
             prompt = "다음 정보를 바탕으로 질문에 답해줘:\n\n"
             prompt += "\n\n".join(retrieved_chunks)
             prompt += f"\n\n질문: {question}"
