@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import aiagent_model
 import langchain_model
 from validators import validate_input
+from xss_filter import sanitize_input
 
 load_dotenv() 
 
@@ -24,7 +25,9 @@ def aiagent():
         return jsonify({"error": validate_error}), 400
 
     result = aiagent_model.chat(user_message, message_list)
-    
+    # XSS 필터링
+    result = sanitize_input(result)
+
     return jsonify(result)
 
 if __name__ == '__main__':

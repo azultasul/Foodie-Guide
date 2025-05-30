@@ -1,3 +1,5 @@
+from xss_filter import contains_xss, sanitize_input
+
 def validate_input(data):
     """
     message_list의 유효성을 검사하고 안전한 role만 반환되도록 정제합니다.
@@ -12,11 +14,14 @@ def validate_input(data):
     if not user_message or not isinstance(user_message, str):
         return "Message must be a non-empty string"
     
+    if contains_xss(user_message):
+        return "User message contains potentially harmful content"
+    
     if not isinstance(message_list, list):
         return "Message list must be a list"
     
     #DoS attack 방지: 메시지 길이 제한
-    if len(user_message) > 1000:
+    if len(user_message) > 1000: 
         return "Message is too long, maximum length is 1000 characters"
     
     if len(message_list) > 50:
@@ -30,4 +35,8 @@ def validate_input(data):
             return f"Invalid role '{msg['role']}' in message list item {i}, must be 'user' or 'assistant'"
         if not isinstance(msg['content'], str):
             return f"{i+1}th message content must be a string"
+        if contains_xss(msg['content']):
+            return f"{i+1}th message contains potentially harmful content"
+
     return None  # 모든 검증 통과
+
