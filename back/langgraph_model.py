@@ -11,13 +11,12 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import MemorySaver, InMemorySaver
 
 from typing import Annotated, Dict, Optional
 from typing_extensions import TypedDict
 
 from RAG import RAG
-
 
 # 환경 변수 로드
 load_dotenv()
@@ -29,6 +28,8 @@ class State(TypedDict):
     web: Optional[str] = None
     reply: Optional[str] = None
     last_tool: Optional[str] = None
+
+memory = InMemorySaver()
 
 graph_builder = StateGraph(State)
 
@@ -133,32 +134,48 @@ graph_builder.add_conditional_edges(
     }
 )
 
-graph = graph_builder.compile()
+# graph = graph_builder.compile()
+graph = graph_builder.compile(checkpointer=memory)
 
 def chat(user_message, message_list=[]):
+    thread_id = "foodie-guide"
+    config = {"configurable": {"thread_id": thread_id}}
+    # checkpoint = memory.load_checkpoint(thread_id)
+
+    print("memory", memory)
     messages = []
-    messages.append({"role": "system", "content": "당신은 구체적인 음식 메뉴를 추천하는 AI입니다."})
-    messages.append({"role": "system", "content": "입력된 문장에서 사용자의 기호를 파악해서 구체적인 음식 메뉴를 추천하거나, 사용자가 건강 상태를 나열할 경우 그 상태에 따라 먹어도 되는 구체적인 음식 메뉴를 제안하는 AI입니다."})
-    messages.append({"role": "system", "content": "사용자가 원하는 음식을 파악하기 어려운 경우와 사용자가 음식 추천을 원하지 않는 경우 일반적인 대화를 이어갈 수 있는 유연한 AI입니다."})
+    if checkpoint := memory.get(config):
+        messages = checkpoint["messages"] + [{"role": "user", "content": user_message}]
+    else:
+        messages = [
+            {"role": "system", "content": "당신은 구체적인 음식 메뉴를 추천하는 AI입니다."},
+            {"role": "system", "content": "입력된 문장에서 사용자의 기호를 파악해서 구체적인 음식 메뉴를 추천하거나, 사용자가 건강 상태를 나열할 경우 그 상태에 따라 먹어도 되는 구체적인 음식 메뉴를 제안하는 AI입니다."},
+            {"role": "system", "content": "사용자가 원하는 음식을 파악하기 어려운 경우와 사용자가 음식 추천을 원하지 않는 경우 일반적인 대화를 이어갈 수 있는 유연한 AI입니다."},
+            {"role": "user", "content": user_message}
+        ]
 
-    for msg in message_list:
-        if msg['fromWho'] == 'bot':
-            role = "assistant"
-        elif msg['fromWho'] == 'user':
-            role = "user"
-        
-        if isinstance(msg['cont'], list):
-            for cont_item in msg['cont']:
-                messages.append({"role": role, "content": cont_item})
-        else:
-            messages.append({"role": role, "content": msg['cont']})
 
-    messages.append({"role": "user", "content": user_message})
+    # messages = []
+    # # 이전 메시지가 있으면 이어붙이기
+    # if checkpoint and "messages" in checkpoint:
+    #     messages = checkpoint["messages"] + [{"role": "user", "content": user_message}]
+    # else:
+    #     messages = [
+    #         {"role": "system", "content": "당신은 구체적인 음식 메뉴를 추천하는 AI입니다."},
+    #         {"role": "system", "content": "입력된 문장에서 사용자의 기호를 파악해서 구체적인 음식 메뉴를 추천하거나, 사용자가 건강 상태를 나열할 경우 그 상태에 따라 먹어도 되는 구체적인 음식 메뉴를 제안하는 AI입니다."},
+    #         {"role": "system", "content": "사용자가 원하는 음식을 파악하기 어려운 경우와 사용자가 음식 추천을 원하지 않는 경우 일반적인 대화를 이어갈 수 있는 유연한 AI입니다."},
+    #         {"role": "user", "content": user_message}
+    #     ]
 
-    # print("memory", memory)
     initial_state = {"messages": messages}
+    # initial_state = {"thread_id": "foodie-guide", "messages": messages}
 
-    final_state = graph.invoke(initial_state)
+    # final_state = graph.invoke(initial_state)
+    final_state = graph.invoke(initial_state, config=config)
+    bot_reply = final_state.get("reply")
+    messages.append({"role": "assistant", "content": bot_reply})
+    
+    # memory.save_checkpoint(thread_id, final_state)
     
     print("final_state", final_state)
 
@@ -172,7 +189,7 @@ def chat(user_message, message_list=[]):
         "category": ''
     }
 
-# chat("나 배고파")
+# chat("안녕 나 유다솔이라고 해")
 
 
 # final_state = graph.invoke(initial_state)
