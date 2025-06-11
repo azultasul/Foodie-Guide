@@ -42,13 +42,13 @@ npm run dev
 ```
 
 # 📍 기술스택
-<img width="550" alt="image" src="https://github.com/user-attachments/assets/762f28d3-d43c-4bef-93d0-601d32ae1ddd" />
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/762f28d3-d43c-4bef-93d0-601d32ae1ddd" />
 
 
 # 📍 아키텍쳐 및 폴더 구조
 
 ### [ 아키텍쳐 ]
-<img width="770" alt="image" src="https://github.com/user-attachments/assets/b180bd1c-c66a-4c75-abc9-9a9350a79e13" />
+<img width="830" alt="image" src="https://github.com/user-attachments/assets/b180bd1c-c66a-4c75-abc9-9a9350a79e13" />
 
 
 ### [ 폴더 구조 ]
