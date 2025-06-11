@@ -1,6 +1,6 @@
 # 📍 Foodie Guide
 
-**RAG + AI 에이전트 기반의 식당 추천 챗봇 서비스**
+## **RAG + AI 에이전트 기반의 식당 추천 챗봇 서비스**
 
 ### [ 프로젝트 설명 ]
 
@@ -42,12 +42,14 @@ npm run dev
 ```
 
 # 📍 기술스택
-<img width="550" alt="기술스택" src="https://github-production-user-asset-6210df.s3.amazonaws.com/105263749/453733112-ba82d036-c86f-41ce-9709-dbd90ce7ef00.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250611%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250611T033949Z&X-Amz-Expires=300&X-Amz-Signature=d7f4df7f4dbc661f58eb9ae27df2fb6ab8b8a2304913bf379c2c61cbd937174e&X-Amz-SignedHeaders=host" />   
+<img width="528" alt="image" src="https://github.com/user-attachments/assets/762f28d3-d43c-4bef-93d0-601d32ae1ddd" />
+
 
 # 📍 아키텍쳐 및 폴더 구조
 
 ### [ 아키텍쳐 ]
-<img width="750" alt="아키텍쳐" src="https://github-production-user-asset-6210df.s3.amazonaws.com/105263749/453732968-4ac4b2c8-0745-4172-b17b-e3004cd2699d.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250611%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250611T034010Z&X-Amz-Expires=300&X-Amz-Signature=73053fbaaa122d8384713f33688e3d55a8479e1c74739959dfe6cf3fcee79e94&X-Amz-SignedHeaders=host" />
+<img width="740" alt="image" src="https://github.com/user-attachments/assets/b180bd1c-c66a-4c75-abc9-9a9350a79e13" />
+
 
 ### [ 폴더 구조 ]
 
