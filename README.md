@@ -1,16 +1,18 @@
 # 📍 Foodie Guide
 
-**개인 사용자를 위한 RAG 기반 식당 추천 챗봇 서비스**
+### **RAG + AI 에이전트 기반의 식당 추천 챗봇 서비스**
 
 ### [ 프로젝트 설명 ]
 
 딥러닝 프로젝트 | 개발 기간: 2주 | 개발 인원: 2명(선하라, 유다솔)
 
 - OpenAI의 **ChatGPT**(gpt-3.5-turbo)를 기반으로 한 **챗봇** 웹 서비스입니다.
-- 사용자의 건강 상태와 기호를 반영하여 음식 메뉴를 추천하고, 사용자의 위치를 기반으로 해당 메뉴를 판매하는 식당을 안내합니다.
-- 건강 데이터와 음식 재료 데이터를 활용해 **벡터 DB**를 구축하고 **RAG**를 적용하여 LLM의 환각 문제를 최소화했습니다.
+- 사용자의 건강 상태와 기호를 반영하여 음식 메뉴를 추천하고, 사용자 위치를 기반으로 해당 메뉴를 판매하는 식당을 안내합니다.
+- 건강 데이터와 음식 재료 데이터를 활용해 **Vector DB**를 구축하고 **RAG**를 적용하여 LLM의 환각 문제를 최소화했습니다.
 - **Prompt Engineering** 기법을 적용하여 서비스 최적화를 이루고자 했습니다.
-- Flask와 React 기반의 웹 개발 환경을 구축하여 **AI 모델을 실제 서비스에 적용**할 수 있는 역량 강화
+- **LangChain**의 Agent와 Tool 모듈을 활용해 **AI 에이전트** 기반 서비스를 구축했습니다.
+- **LangGraph**를 사용해 에이전트의 상태 관리와 플로우 제어를 구현했습니다.
+- Flask와 React 기반의 웹 개발 환경을 구축하여 **AI 모델을 실제 서비스에 적용**했습니다. 
 
 # 📍 배포 주소
 * https://foodie-guide.duckdns.org/
@@ -20,7 +22,7 @@
 ### [ Installation ]
 
 ```bash
-git clone git@github.com:azultasul/Foodie-Guide.git
+git clone https://github.com/azultasul/Foodie-Guide.git
 ```
 
 ### [ Backend ]
@@ -40,12 +42,14 @@ npm run dev
 ```
 
 # 📍 기술스택
-<img width="700" alt="기술스택" src="https://github.com/user-attachments/assets/f0e3cbce-84e1-450f-9d2d-fccbf389d1ef" />
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/762f28d3-d43c-4bef-93d0-601d32ae1ddd" />
+
 
 # 📍 아키텍쳐 및 폴더 구조
 
 ### [ 아키텍쳐 ]
-<img width="700" alt="아키텍쳐" src="https://github.com/user-attachments/assets/8accdedf-19eb-4d19-aaae-2d47f489bfc1" />
+<img width="830" alt="image" src="https://github.com/user-attachments/assets/b180bd1c-c66a-4c75-abc9-9a9350a79e13" />
+
 
 ### [ 폴더 구조 ]
 
