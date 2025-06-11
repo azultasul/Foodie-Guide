@@ -84,7 +84,10 @@ class RAG(object):
         print("✅5/5 임베딩 저장 완료!")
 
     def load_vector_index(self):
-        self.index = faiss.read_index(f"vector_store/index_{self.filename}.faiss")
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        index_path = os.path.join(base_dir,'vector_store',f'index_{self.filename}.faiss')
+        self.index = faiss.read_index(index_path)
+        # self.index = faiss.read_index(f"vector_store/index_{self.filename}.faiss")
 
         with open(f"vector_store/chunks_{self.filename}.pkl", "rb") as f:
             self.chunks = pickle.load(f)
