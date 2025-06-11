@@ -14,7 +14,8 @@ CORS(app)  # Vite 프론트엔드와 CORS 문제 방지
 def aiagent():
     user_message = request.json.get("message")
     message_list = request.json.get("messageList")
-    data = aiagent_model.chat(user_message, message_list)
+    # data = aiagent_model.chat(user_message, message_list)
+    data = langchain_model.chat(user_message, message_list)
     
     return jsonify(data)
 
