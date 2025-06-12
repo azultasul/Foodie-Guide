@@ -48,7 +48,8 @@ npm run dev
 # 📍 아키텍쳐 및 폴더 구조
 
 ### [ 아키텍쳐 ]
-<img width="830" alt="image" src="https://github.com/user-attachments/assets/b180bd1c-c66a-4c75-abc9-9a9350a79e13" />
+<img width="830" alt="image" src="https://github.com/user-attachments/assets/9d143e4d-b63e-423d-a544-66081bb04d78" />
+
 
 
 ### [ 폴더 구조 ]
