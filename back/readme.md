@@ -10,6 +10,26 @@ NAVER_CLIENT_SECRET=
 ## Flask + OPENAI API
 
 ## NAVER API
+---
+# SSL/TLS 1.3 적용
+자세한 내용은 [여기](https://github.com/seonhara/Cyber-Security/blob/main/%EC%8B%A4%EC%8A%B5%EC%A0%95%EB%A6%AC/Network%20Security/TLS_example.md)를 참고하세요.
+### TLS 적용 전후 비교
+<p align="center">
+  <img src="https://github.com/seonhara/Cyber-Security/blob/main/images/tls_before.png" alt="Image 1" height="200" width ="250" />
+    &nbsp;&nbsp;&nbsp;&nbsp; <!-- 사진 사이 여백 -->
+  <img src="https://github.com/seonhara/Cyber-Security/blob/main/images/tls_complete.png" alt="Image 2" height="200" width ="250" />
+</p>
+
+### TLS v1.3사용 여부 확인
+
+```
+openssl s_client -connect <도메인>:443 -tls1_3
+```
+s_client : SSL/TLS 서버와의 연결을 시도해서 인증서, 프로토콜 버전, 암호화 알고리즘 등을 직접 확인함
+
+<p align="center">
+<img src="https://github.com/seonhara/Cyber-Security/blob/main/images/tls1.3.png" alt="Image 1" height="200" />
+</p>
 
 ---
 # Secure Coding
