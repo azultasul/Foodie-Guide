@@ -1,16 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CommonBtn from '@/components/CommonBtn'
+import SidePanel from '@/components/SidePanel'
 import styles from '@/assets/style/components/map.module.css'
 
 const Map = () => {
   const savedMapData = sessionStorage.getItem('mapData')
   const [mapData, setMapData] = useState(savedMapData ? JSON.parse(savedMapData) : {})
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false)
   const mapElement = useRef(null)
   const mapRef = useRef(null) // 지도 객체를 저장할 ref
   const markersRef = useRef([]) // 마커들을 저장할 ref
   const [currentMarker, setCurrentMarker] = useState(mapData?.items ? mapData?.items[mapData?.nearestIndex] : -1)
   const navigate = useNavigate()
+
+  const toggleSidePanel = () => {
+    setIsSidePanelOpen(!isSidePanelOpen)
+  }
 
   useEffect(() => {
     if (Object.keys(mapData).length === 0) {
@@ -70,7 +76,13 @@ const Map = () => {
 
   return (
     <div id="frame" className="naver">
-      <div id="sidepanel" className={styles.info}>
+      <SidePanel
+        isOpen={isSidePanelOpen}
+        onToggle={toggleSidePanel}
+        className={styles.info}
+        showHamburger={true}
+        hamburgerPosition="map"
+      >
         <h2 dangerouslySetInnerHTML={{ __html: `${currentMarker?.title}` }}></h2>
         <hr />
         <h3>🍴 위치</h3>
@@ -79,7 +91,8 @@ const Map = () => {
         <p>{currentMarker?.menu}</p>
         {/* <iframe id="iframe" src={`https://map.naver.com/p/search/${mapData.currentAddress} ${mapData.items[mapData.nearestIndex]?.title}`} title="Naver Map"></iframe> */}
         {currentMarker?.link && <CommonBtn type="a" text="자세히 보기" linkTo={currentMarker?.link} />}
-      </div>
+      </SidePanel>
+
       <div ref={mapElement} className="content" />
     </div>
   )

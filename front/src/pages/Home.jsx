@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { getAiagent } from '@/api/getAiagent'
 import Message from '@/components/Message'
 import CommonBtn from '@/components/CommonBtn'
+import SidePanel from '@/components/SidePanel'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import sideBtnData from '@/data/sideButton'
 import useGeoLocation from '@/hooks/useGeoLocation'
@@ -14,6 +15,7 @@ const Home = () => {
   const [userInput, setUserInput] = useState('')
   const [timeState, setTimeState] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false)
   const { currentLocation, currentAddress, error: geoError, requestLocation } = useGeoLocation()
 
   const [menus, setMenus] = useState([])
@@ -66,9 +68,17 @@ const Home = () => {
 
   const submitMessage = async (event, user_message) => {
     event.preventDefault()
+    // 모바일에서 메시지 전송 후 사이드패널 닫기
+    if (window.innerWidth <= 780) {
+      setIsSidePanelOpen(false)
+    }
     addUserMessage(user_message)
     setIsLoading(true)
     await addBotMessage(user_message)
+  }
+
+  const toggleSidePanel = () => {
+    setIsSidePanelOpen(!isSidePanelOpen)
   }
 
   useEffect(() => {
@@ -98,7 +108,11 @@ const Home = () => {
 
   return (
     <div id="frame">
-      <div id="sidepanel">
+      <SidePanel
+        isOpen={isSidePanelOpen}
+        onToggle={toggleSidePanel}
+        showHamburger={false}
+      >
         {Object.keys(buttonData).map((data) => {
           return (
             <div className="category" key={data}>
@@ -111,21 +125,27 @@ const Home = () => {
             </div>
           )
         })}
-      </div>
+      </SidePanel>
+
       <div className="content">
         <div className="title">
           <div>
             Foodie Guide <span>with ChatGPT</span>
           </div>
-          <CommonBtn
-            type="button"
-            text="현재 위치 공유"
-            onClick={(e) => {
-              e.preventDefault()
-              requestLocation()
-              geoError && alert(geoError)
-            }}
-          />
+          <div className="title-right">
+            <CommonBtn
+              type="button"
+              text="현재 위치 공유"
+              onClick={(e) => {
+                e.preventDefault()
+                requestLocation()
+                geoError && alert(geoError)
+              }}
+            />
+            <button className="hamburger-btn" onClick={toggleSidePanel}>
+              <FontAwesomeIcon icon={isSidePanelOpen ? "fa-solid fa-times" : "fa-solid fa-bars"} />
+            </button>
+          </div>
           <div className={timeState === 0 ? 'info show' : 'info'}>
             <p>위치 권한을 활성화한 후</p>
             <p>현재 위치를 공유해 주시면</p>
@@ -165,8 +185,20 @@ const Home = () => {
         <div className="message-input">
           <div className="wrap">
             <form onSubmit={(event) => submitMessage(event, userInput)}>
-              <input type="text" placeholder="Write your message..." value={userInput} onChange={(e) => setUserInput(e.target.value)} />
-              <button className="submit">
+              <input
+                id="message-input"
+                type="text"
+                placeholder="Write your message..."
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                aria-label="메시지 입력"
+                autoComplete="off"
+              />
+              <button
+                type="submit"
+                className="submit"
+                aria-label="메시지 전송"
+              >
                 <FontAwesomeIcon icon="fa-solid fa-paper-plane" className="fa fa-paperclip attachment" />
               </button>
             </form>

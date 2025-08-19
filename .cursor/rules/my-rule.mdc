@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+- back 폴더는 flask 서버 환경, fornt는 react 기반의 환경으로 구성됐다. 
+- 가상환경은 back 폴더의 foodienv 폴더를 참고하고 환경변수는 back 폴더의 .env 파일을 참고한다.
